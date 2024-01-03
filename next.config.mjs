@@ -9,7 +9,7 @@ export default withBundleAnalyzer({
   eslint: {
     ignoreDuringBuilds: true,
   },
-  trailingSlash: true,
-  skipTrailingSlashRedirect: true,
-  distDir: 'dist',
+  experimental: {
+    optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
+  },
 })
