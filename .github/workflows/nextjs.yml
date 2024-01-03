@@ -82,10 +82,16 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
-      - name: List files in dist directory
-        run: ls -R ./dist
+      - name: Check if dist folder exists
+        run: |
+          if [ -d "./dist" ]; then
+            echo "dist folder exists!"
+            ls -R ./dist  # Display contents of the dist folder
+          else
+            echo "dist folder does not exist!"
+          fi
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
