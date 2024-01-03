@@ -31,6 +31,8 @@ import {
   IconChevronDown,
 } from '@tabler/icons-react'
 import cx from 'clsx'
+import Image from 'next/image'
+import MyLogo from '../../public/NSDLogo.png'
 
 const links = [
   { link: '/', label: 'Home' },
@@ -68,7 +70,7 @@ export function Header() {
       href={link.link}
       key={link.label}
       className={classes.link}
-      data-active={active === link.link || undefined}
+      data-active={pathname === link.link || undefined}
       onClick={() => setActive(link.link)}
     >
       {link.label}
@@ -86,7 +88,7 @@ export function Header() {
   return (
     <header className={classes.header}>
       <Container size='md' className={classes.inner}>
-        <MantineLogo size={28} />
+        <Image src={MyLogo} alt='My Logo' width={70} height={28} />
         <Group gap={5} visibleFrom='xs'>
           {items}
         </Group>
