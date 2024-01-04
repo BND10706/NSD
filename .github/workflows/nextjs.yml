@@ -32,7 +32,7 @@ jobs:
       page_url: ${{ steps.deployment.outputs.page_url }}
 
   deploy:
-  permissions:
+    permissions:
       packages: write
     environment:
       name: github-pages
