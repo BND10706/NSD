@@ -3,6 +3,7 @@ import React from 'react'
 import { MantineProvider, ColorSchemeScript } from '@mantine/core'
 import { theme } from '../theme'
 import { Header } from '@/components/Header/Header'
+import { UserProvider } from '../context/UserContext'
 
 export const metadata = {
   title: 'Next Step Discipleship',
@@ -21,10 +22,12 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>
-          <Header />
-          {children}
-        </MantineProvider>
+        <UserProvider>
+          <MantineProvider theme={theme}>
+            <Header />
+            {children}
+          </MantineProvider>
+        </UserProvider>
       </body>
     </html>
   )

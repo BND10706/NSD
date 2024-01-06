@@ -13,9 +13,9 @@ import {
 import React, { useState } from 'react'
 import classes from './AuthenticationTitle.module.css'
 import Link from 'next/link'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '@/app/firebase'
 import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
+import { useUser } from '../../context/UserContext' // Update the path to match your file structure
 
 export function AuthenticationTitle() {
   const router = useRouter()
@@ -23,6 +23,7 @@ export function AuthenticationTitle() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const { setUser } = useUser()
 
   async function handleLogin() {
     if (!email || !password) {
@@ -32,7 +33,25 @@ export function AuthenticationTitle() {
 
     setIsLoggingIn(true)
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      const response = await fetch('http://localhost:1337/api/auth/local', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          identifier: email,
+          password: password,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Login failed')
+      }
+
+      const data = await response.json()
+      Cookies.set('token', data.jwt) // Set the JWT in a cookie
+      setUser(data.user)
+
       router.push('/') // Redirect to home page after successful sign-in
     } catch (error) {
       setError((error as Error).message)

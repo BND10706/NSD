@@ -14,11 +14,7 @@ import {
   Text,
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { MantineLogo } from '@mantinex/mantine-logo'
 import classes from './Header.module.css'
-import { onAuthStateChanged, signOut } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
-import { auth, db } from '@/app/firebase'
 import {
   IconLogout,
   IconHeart,
@@ -33,6 +29,8 @@ import {
 import cx from 'clsx'
 import Image from 'next/image'
 import MyLogo from '../../public/NSDLogo.png'
+import Cookies from 'js-cookie'
+import { useUser } from '../../context/UserContext'
 
 const links = [
   { link: '/', label: 'Home' },
@@ -44,26 +42,23 @@ export function Header() {
   const [opened, { toggle }] = useDisclosure(false)
   const [userMenuOpened, setUserMenuOpened] = useState(false)
   const [active, setActive] = useState(links[0].link)
-  const [firstName, setFirstName] = useState(null)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const { user, setUser } = useUser()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setIsLoggedIn(true)
-        getDoc(doc(db, 'users', user.uid)).then((docSnapshot) => {
-          if (docSnapshot.exists()) {
-            setFirstName(docSnapshot.data().firstName)
-          }
-        })
-      } else {
-        setIsLoggedIn(false)
-      }
-    })
-
-    // Cleanup function
-    return () => unsubscribe()
+    const storedUser = Cookies.get('user')
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
   }, [])
+
+  useEffect(() => {
+    console.log('user:' + user)
+  }, [user])
+
+  function handleLogout() {
+    setUser(null) // Remove the user's data from your UserContext
+    Cookies.remove('token') // Remove the JWT token from your cookies
+  }
 
   const items = links.map((link) => (
     <Link
@@ -80,11 +75,6 @@ export function Header() {
   const isLoginPage = pathname === '/Login'
   const buttonVariant = isLoginPage ? 'blue' : 'default'
 
-  const user = {
-    name: { firstName },
-    email: 'janspoon@fighter.dev',
-  }
-
   return (
     <header className={classes.header}>
       <Container size='md' className={classes.inner}>
@@ -94,8 +84,8 @@ export function Header() {
         </Group>
 
         <Group visibleFrom='sm'>
-          {isLoggedIn ? (
-            <Container className={classes.mainSection} size='md'>
+          <Container className={classes.mainSection} size='md'>
+            {user && (
               <Group justify='space-between'>
                 <Burger
                   opened={opened}
@@ -120,7 +110,8 @@ export function Header() {
                     >
                       <Group gap={7}>
                         <Text fw={500} size='sm' lh={1} mr={3}>
-                          {user.name.firstName}
+                          {user?.firstName.charAt(0).toUpperCase() +
+                            user?.firstName.slice(1).toLowerCase()}
                         </Text>
                         <IconChevronDown
                           style={{ width: rem(12), height: rem(12) }}
@@ -138,7 +129,7 @@ export function Header() {
                           stroke={1.5}
                         />
                       }
-                      onClick={() => signOut(auth)}
+                      onClick={handleLogout}
                     >
                       Logout
                     </Menu.Item>
@@ -147,8 +138,9 @@ export function Header() {
                   </Menu.Dropdown>
                 </Menu>
               </Group>
-            </Container>
-          ) : (
+            )}
+          </Container>
+          {!user && (
             <Link href='/Login'>
               <Button
                 variant={buttonVariant}

@@ -13,10 +13,9 @@ import {
 import React, { useState } from 'react'
 import classes from './Registration.module.css'
 import Link from 'next/link'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { doc, setDoc } from 'firebase/firestore'
-import { auth, db } from '@/app/firebase'
 import { useRouter } from 'next/navigation'
+import axios from 'axios'
+import Cookies from 'js-cookie'
 
 export function Registration() {
   const [email, setEmail] = useState('')
@@ -27,39 +26,42 @@ export function Registration() {
   const router = useRouter()
   const [isRegistering, setIsRegistering] = useState(false)
 
-  function handleRegistration() {
+  async function handleRegistration() {
     setIsRegistering(true)
     if (!email || !password || !firstName || !lastName) {
       setError('Please fill all fields')
+      setIsRegistering(false)
       return
     }
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user
 
-        // Create a user in Firestore
-        setDoc(doc(db, 'users', user.uid), {
-          firstName: firstName.toUpperCase(),
-          lastName: lastName.toUpperCase(),
+    try {
+      const response = await axios.post(
+        'http://localhost:1337/api/auth/local/register',
+        {
+          username: email,
           email: email,
-        })
-          .then(() => {
-            console.log('Document successfully written!')
-            router.push('/')
-          })
-          .catch((error) => {
-            console.error('Error writing document: ', error)
-          })
-          .finally(() => {
-            setIsRegistering(false)
-          })
-      })
-      .catch((error) => {
-        const errorMessage = error.message
-        setError(errorMessage)
-        setIsRegistering(false)
-      })
+          password: password,
+          firstName: firstName,
+          lastName: lastName,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (response.data) {
+        console.log('User registered successfully!')
+        // Store the token in a cookie
+        Cookies.set('token', response.data.jwt)
+        router.push('/')
+      }
+    } catch (error) {
+      console.error('An error occurred:')
+    } finally {
+      setIsRegistering(false)
+    }
   }
 
   return (
