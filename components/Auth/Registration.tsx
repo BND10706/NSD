@@ -16,6 +16,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import Cookies from 'js-cookie'
+import { useUser } from '../../context/UserContext'
 
 export function Registration() {
   const [email, setEmail] = useState('')
@@ -25,6 +26,7 @@ export function Registration() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const [isRegistering, setIsRegistering] = useState(false)
+  const { setUser } = useUser()
 
   async function handleRegistration() {
     setIsRegistering(true)
@@ -52,13 +54,14 @@ export function Registration() {
       )
 
       if (response.data) {
-        console.log('User registered successfully!')
         // Store the token in a cookie
         Cookies.set('token', response.data.jwt)
+        // Store the user data in the user context
+        setUser(response.data.user)
         router.push('/')
       }
     } catch (error) {
-      console.error('An error occurred:')
+      console.error('An error occurred:', error)
     } finally {
       setIsRegistering(false)
     }

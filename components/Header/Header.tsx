@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   Menu,
   Avatar,
@@ -17,14 +17,8 @@ import { useDisclosure } from '@mantine/hooks'
 import classes from './Header.module.css'
 import {
   IconLogout,
-  IconHeart,
-  IconStar,
-  IconMessage,
-  IconSettings,
-  IconPlayerPause,
-  IconTrash,
-  IconSwitchHorizontal,
   IconChevronDown,
+  IconUserCircle,
 } from '@tabler/icons-react'
 import cx from 'clsx'
 import Image from 'next/image'
@@ -43,21 +37,28 @@ export function Header() {
   const [userMenuOpened, setUserMenuOpened] = useState(false)
   const [active, setActive] = useState(links[0].link)
   const { user, setUser } = useUser()
+  const router = useRouter()
 
-  useEffect(() => {
+  const loadUserFromCookie = () => {
     const storedUser = Cookies.get('user')
     if (storedUser) {
       setUser(JSON.parse(storedUser))
     }
-  }, [])
+  }
 
   useEffect(() => {
-    console.log('user:' + user)
-  }, [user])
+    loadUserFromCookie()
+  }, [])
 
   function handleLogout() {
     setUser(null) // Remove the user's data from your UserContext
     Cookies.remove('token') // Remove the JWT token from your cookies
+    Cookies.remove('user') // Remove the user from your cookies
+    router.push('/')
+  }
+
+  const handleProfileRedirect = () => {
+    router.push('/Profile')
   }
 
   const items = links.map((link) => (
@@ -122,6 +123,17 @@ export function Header() {
                   </Menu.Target>
                   <Menu.Dropdown>
                     <Menu.Label>Settings</Menu.Label>
+                    <Menu.Item
+                      leftSection={
+                        <IconUserCircle
+                          style={{ width: rem(16), height: rem(16) }}
+                          stroke={1.5}
+                        />
+                      }
+                      onClick={handleProfileRedirect}
+                    >
+                      User Settings
+                    </Menu.Item>
                     <Menu.Item
                       leftSection={
                         <IconLogout
