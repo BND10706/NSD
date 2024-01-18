@@ -3,12 +3,19 @@ import React, { createContext, useState, useContext, useEffect } from 'react'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
+interface Assessment {
+  id: number
+  title: string
+  assessment_completed: boolean
+}
+
 interface User {
   firstName: string
   lastName: string
   email: string
   id: number
   colorScheme: string
+  assessments: Assessment[]
 }
 
 interface UserContextProps {
@@ -26,27 +33,30 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const jwt = Cookies.get('token') // Log the JWT
+    const fetchUser = async () => {
+      const jwt = Cookies.get('token')
 
-    if (jwt) {
-      axios
-        .get('http://localhost:1337/api/users/me', {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${jwt}`,
-          },
-        })
-        .then((response) => {
-          // Log the user data
+      if (jwt) {
+        try {
+          const response = await axios.get(
+            'http://localhost:1337/api/users/me?include=assessments',
+            {
+              headers: {
+                Authorization: `Bearer ${jwt}`,
+              },
+            }
+          )
+
           setUser(response.data)
-          setIsLoading(false)
-        })
-        .catch((error) => {
-          setIsLoading(false)
-        })
-    } else {
+        } catch (error) {
+          console.error('An error occurred:', error)
+        }
+      }
+
       setIsLoading(false)
     }
+
+    fetchUser()
   }, [])
 
   return (

@@ -45,6 +45,7 @@ export function Registration() {
           password: password,
           firstName: firstName,
           lastName: lastName,
+          colorScheme: 'dark',
         },
         {
           headers: {
@@ -58,6 +59,26 @@ export function Registration() {
         Cookies.set('token', response.data.jwt)
         // Store the user data in the user context
         setUser(response.data.user)
+
+        // Create UserAssessment
+        await axios.post(
+          'http://localhost:1337/api/user-assessments', // replace with your UserAssessment API endpoint
+          {
+            data: {
+              title: 'Assessment 1',
+              completed: false,
+              user: response.data.user.id,
+              assessment: 2,
+            },
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${response.data.jwt}`,
+            },
+          }
+        )
+
         router.push('/')
       }
     } catch (error) {

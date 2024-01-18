@@ -29,6 +29,7 @@ import { useUser } from '../../context/UserContext'
 const links = [
   { link: '/', label: 'Home' },
   { link: '/About', label: 'About' },
+  { link: '/Assessments', label: 'Assessments', private: true },
 ]
 
 export function Header() {
@@ -61,17 +62,24 @@ export function Header() {
     router.push('/Profile')
   }
 
-  const items = links.map((link) => (
-    <Link
-      href={link.link}
-      key={link.label}
-      className={classes.link}
-      data-active={pathname === link.link || undefined}
-      onClick={() => setActive(link.link)}
-    >
-      {link.label}
-    </Link>
-  ))
+  const items = links.map((link) => {
+    // If the link is private and there's no user, don't render it
+    if (link.private && !user) {
+      return null
+    }
+
+    return (
+      <Link
+        href={link.link}
+        key={link.label}
+        className={classes.link}
+        data-active={pathname === link.link || undefined}
+        onClick={() => setActive(link.link)}
+      >
+        {link.label}
+      </Link>
+    )
+  })
 
   const isLoginPage = pathname === '/Login'
   const buttonVariant = isLoginPage ? 'blue' : 'default'

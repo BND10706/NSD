@@ -1,0 +1,24 @@
+/* AssessmentCard.module.css */
+.card {
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.button {
+  width: 100%;
+  text-align: center;
+}
+
+.complete {
+  color: green;
+}
