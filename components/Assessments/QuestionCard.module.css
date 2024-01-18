@@ -1,0 +1,19 @@
+/* QuestionCard.module.css */
+
+.card {
+  margin-bottom: 10px;
+  width: 500px; /* Set a fixed width for the card */
+}
+
+.title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-left: 40px;
+  padding-right: 40px;
+}

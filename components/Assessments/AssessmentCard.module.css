@@ -1,6 +1,8 @@
 /* AssessmentCard.module.css */
+
 .card {
   margin-bottom: 10px;
+  width: 400px; /* Set a fixed width for the card */
 }
 
 .title {

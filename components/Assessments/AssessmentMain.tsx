@@ -11,7 +11,7 @@ interface Assessment {
   id: number
   attributes: {
     title: string
-    assessment_completed: boolean
+    completed: boolean
   }
 }
 

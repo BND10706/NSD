@@ -4,16 +4,11 @@ import { IconCheck, IconX } from '@tabler/icons-react'
 import classes from './AssessmentCard.module.css'
 import { useRouter } from 'next/navigation'
 
-interface AssessmentAttributes {
-  title: string
-  assessment_completed: boolean
-}
-
 interface Assessment {
   id: number
   attributes: {
     title: string
-    assessment_completed: boolean
+    completed: boolean
   }
 }
 
@@ -23,6 +18,11 @@ interface AssessmentCardProps {
 
 const AssessmentCard: React.FC<AssessmentCardProps> = ({ assessment }) => {
   const router = useRouter()
+  console.log('Assessment Card Data:', assessment)
+  console.log(
+    'Type of assessment_completed:',
+    typeof assessment.attributes.completed
+  )
 
   const handleTakeAssessment = () => {
     router.push(`/Assessments/${assessment.id}`)
@@ -42,7 +42,7 @@ const AssessmentCard: React.FC<AssessmentCardProps> = ({ assessment }) => {
           <Text className={classes.title}>{assessment.attributes.title}</Text>
         </Grid.Col>
         <Grid.Col span={6} className={classes.status}>
-          {assessment.attributes.assessment_completed ? (
+          {assessment.attributes.completed ? (
             <>
               <Text className={classes.complete}>Complete</Text>
               <IconCheck className={classes.complete} />
@@ -57,8 +57,8 @@ const AssessmentCard: React.FC<AssessmentCardProps> = ({ assessment }) => {
         <Grid.Col span={12}>
           <Button
             className={classes.button}
-            disabled={assessment.attributes.assessment_completed}
-            color={assessment.attributes.assessment_completed ? 'gray' : 'blue'}
+            disabled={assessment.attributes.completed}
+            color={assessment.attributes.completed ? 'gray' : 'blue'}
             onClick={handleTakeAssessment}
           >
             Take Assessment
