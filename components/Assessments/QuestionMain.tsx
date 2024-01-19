@@ -185,31 +185,43 @@ export default function QuestionMain() {
   }
 
   return (
-    <Container size={420} my={40}>
+    <Container size={600} my={40}>
       {currentQuestionIndex < questions.length ? (
         <div key={questions[currentQuestionIndex].id}>
-          <QuestionCard
-            question={questions[currentQuestionIndex].attributes.question}
-            onOptionSelect={(option) =>
-              handleOptionSelect(questions[currentQuestionIndex].id, option)
-            }
-            savedAnswer={answers[questions[currentQuestionIndex].id]}
-          />
-          <Button
-            onClick={handlePreviousQuestion}
-            disabled={currentQuestionIndex === 0}
-          >
-            Previous Question
-          </Button>
-          <Button
-            onClick={handleNextQuestion}
-            disabled={
-              currentQuestionIndex === questions.length - 1 &&
-              answers[questions[currentQuestionIndex].id] === null
-            }
-          >
-            Next Question
-          </Button>
+          <Center>
+            <QuestionCard
+              question={questions[currentQuestionIndex].attributes.question}
+              onOptionSelect={(option) =>
+                handleOptionSelect(questions[currentQuestionIndex].id, option)
+              }
+              savedAnswer={answers[questions[currentQuestionIndex].id]}
+            />
+          </Center>
+          <Grid>
+            <Grid.Col span={6}>
+              <Center>
+                <Button
+                  onClick={handlePreviousQuestion}
+                  disabled={currentQuestionIndex === 0}
+                >
+                  Previous Question
+                </Button>
+              </Center>
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <Center>
+                <Button
+                  onClick={handleNextQuestion}
+                  disabled={
+                    currentQuestionIndex === questions.length - 1 &&
+                    answers[questions[currentQuestionIndex].id] === null
+                  }
+                >
+                  Next Question
+                </Button>
+              </Center>
+            </Grid.Col>
+          </Grid>
         </div>
       ) : (
         <div>
