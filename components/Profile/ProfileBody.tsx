@@ -7,15 +7,26 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 import { IconCheck, IconX } from '@tabler/icons-react'
 
+interface AssessmentAttributes {
+  title: string
+  completed: boolean
+}
+
+interface Assessment {
+  id: number
+  attributes: AssessmentAttributes
+}
+
 export function ProfileBody() {
   const { user } = useUser()
-  const [assessments, setAssessments] = useState([])
+  const [assessments, setAssessments] = useState<Assessment[]>([])
 
   useEffect(() => {
     const fetchAssessments = async () => {
       const jwt = Cookies.get('token')
 
-      if (jwt) {
+      if (jwt && user) {
+        // Add null check for user here
         try {
           const response = await axios.get(
             `http://localhost:1337/api/user-assessments?&filters[user][id][$eq]=${user.id}`,
@@ -26,7 +37,8 @@ export function ProfileBody() {
             }
           )
 
-          setAssessments(response.data.data)
+          const assessments: Assessment[] = response.data.data
+          setAssessments(assessments)
         } catch (error) {
           console.error('An error occurred:', error)
         }
